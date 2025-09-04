@@ -1,0 +1,84 @@
+Docker Volume commands
+---------------------------------------
+
+Volumes are created to make the data persistent.
+
+3 types of volume commands
+
+	1.docker volumes (recommended)
+	2.bind mount
+	3.tmpfs
+
+Note: tmpfs is supported only on Linux
+
+docker volume create my-vol 	#Created a volume named my-vol
+
+docker volume ls 	#Lists are the volumes
+
+docker volume inspect my-vol	#inspects the volume
+
+docker volume path: /var/lib/docker/volumes/my-vol/_data	#for created my-vol volume
+
+docker volume rm my-vol		#removes the volume
+
+
+
+We can attach a volume to container using command -v or --mount(recommended)
+Below command creates my-vol without using "docker volume create my-vol"
+
+docker run -v --name mytomcat -v my-vol:/app nginx:latest
+
+docker run -d --name mytomcat --mount source=my-vol,target=/app nginx:latest
+
+
+
+docker run --name mytomcat -p 8080:8080 -d tomcat:9	#Hosting location is /usr/local/tomcat/webapps
+
+
+
+Creating mytomcat container and attached mytomcatvol volume to webapps folder of container and declared external:internal ports
+
+
+Using -v
+docker run --name mytomcat -p 8080:8080 -d -v mytomcatvol:/usr/local/tomcat/webapps tomcat:9
+
+Note: external ports should be unique 
+
+Using --mount (recommended)
+docker run --name mytomcat -p 8081:8080 -d --mount source=mytomcatvol,target=/usr/local/tomcat/webapps tomcat:9
+
+path of volume in instance - /var/lib/docker/volumes/mytomcatvol/_data
+path of volume in instance - /usr/local/tomcat/webapps
+
+
+Attaching multiple volumes (2 volumes in below case)
+docker run --name mytomcat -p 8082:8080 -d --mount source=mytomcatvol,target=/usr/local/tomcat/webapps --mount source=mytomcatvol,target=/usr/local/tomcat/logs tomcat:9
+
+
+Note: When the container is deleted, still the data is persistent and stored in Instance
+
+Instead of mounting the volume in default docker (/var/lib/docker/volumes/container-name/_data) directory we can mount to a custom path by using bindmount
+
+
+Mounting to present working directory
+Using -v
+docker run -dit --name devtest -v "$(pwd)"/target:/app nginx:latest
+
+
+Using -bind mount
+docker run -dit --name devtest --mount type=bind,source="$(pwd)"/target,target=/app nginx:latest
+
+or explicitly specify the location
+use --mount type=bind,source=/home/ubuntu/target,target=/usr/local/tomcat/webapps
+
+
+tmpfs stores data in swap memory (We have option but we don't use as it is not persistent) 
+
+docker run -d -it --name tmptest -tmpfs /app nginx:latest
+
+docker run -d -it --name tmptest --mount type=tmpfs,destination=/app nginx:latest
+
+
+
+
+

@@ -1,0 +1,133 @@
+Docker Swarm:
+Docker Swarm is a native clustering and orchestration tool in Docker that turns a group of Docker hosts (physical or virtual machines) into a single, unified virtual system.
+
+We need to open the ports 2376 and 2377 ports for docker swarm manager and worker communication.
+
+Two components:
+1. Docker swarm manager
+2. Docker swarm workers
+
+Assume we have 2 docker deamons:
+
+Install docker on both machines
+open ports 2376 and 2377
+
+On master run the following command:
+sudo docker swarm init		
+
+#By default the first machine will become manager where initialized docker swarm.  It generates on code with docker swarm join (token)
+
+On second or other servers we need to run
+docker swarm join token
+
+In docker swarm environment we don't create individual containers.  We create docker services and stacks
+
+Docker services:
+
+With replicas we can create services. #replicas are containers
+
+docker service create --name nameofservice --replicas=6 -p 8080:8080 imagenage:tag
+
+docker service create --name mytomcatservice --replicas=6 -p 8080:8080 tomcat:latest
+
+docker service ls
+
+docker service scale mytomcatservice=8		#Increasing workers from 6 to 8
+docker service scale mytomcatservice=4		#Decreasing workers from 8 to 4
+
+Stack:
+Group of multiple services can be created as a single shot.
+In Swarm mode only we can create both services and stacks
+
+Usecase:  One application with 12 microservices
+
+We need to create one stack with 12 services
+12 services will have replicas from 2 to n depends on requirements
+
+Total minimum replicas would be 12*2=24 containers in this case
+
+we will have one stack file in yaml script which contains multiple services script and instructions
+
+mystack.yaml
+
+docker stack deploy nameofstack -c mystack.yaml		#Deploying stack script. Multiple services will be created
+							 -c means compose
+
+---------------------------------------------------------------------------------------
+
+Voting app
+
+--------------------------------------------------------------------------------------
+docker-stack.yaml
+
+
+version: "3.9"
+
+services:
+
+  redis:
+    image: redis:alpine
+    networks:
+      - frontend
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  vote:
+    image: dockersamples/examplevotingapp_vote
+    ports:
+      - 8080:80
+    networks:
+      - frontend
+    deploy:
+      replicas: 2
+
+  result:
+    image: dockersamples/examplevotingapp_result
+    ports:
+      - 8081:80
+    networks:
+      - backend
+
+  worker:
+    image: dockersamples/examplevotingapp_worker
+    networks:
+      - frontend
+      - backend
+    deploy:
+      replicas: 2
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
+
+-------------------------------------------------------------------------------------
+Blueprint:
+
+Stack.yaml
+
+Service1:
+  Replicas:n
+
+Service2:
+  Replicas:n
+
+----------------------------------------------------------------------------------
+References: 
+https://github.com/dockersamples/example-voting-app
+
+
+
+
+
+

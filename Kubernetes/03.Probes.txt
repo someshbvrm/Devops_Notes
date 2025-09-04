@@ -1,0 +1,306 @@
+Probe: A probe is a diagnostic tool used by Kubernetes to check the health and status of a container within a pod.
+
+3 types
+Liveness probe
+Readiness probe
+Startup probe
+
+Liveness probe: if any of pod is struck or deadlocked automatically liveness probe will restart pod
+Readiness probe: if pod is ready then only service will redirect the traffic to pod
+Startup probe: if pod is taking more time to start first time then liveness probe or readiness probe may be restarting the pod continuously. If we enable startup probe it will suppress liveness and readiness probe
+
+The kubelet uses liveness probes to know when to restart a container. For example, liveness probes could catch a deadlock, where an application is running, but unable to make progress. Restarting a container in such a state can help to make the application more available despite bugs.
+
+A common pattern for liveness probes is to use the same low-cost HTTP endpoint as for readiness probes, but with a higher failureThreshold. This ensures that the pod is observed as not-ready for some period of time before it is hard killed.
+
+The kubelet uses readiness probes to know when a container is ready to start accepting traffic. A Pod is considered ready when all of its containers are ready. One use of this signal is to control which Pods are used as backends for Services. When a Pod is not ready, it is removed from Service load balancers.
+
+The kubelet uses startup probes to know when a container application has started. If such a probe is configured, liveness and readiness probes do not start until it succeeds, making sure those probes don't interfere with the application startup. This can be used to adopt liveness checks on slow starting containers, avoiding them getting killed by the kubelet before they are up and running.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Kubernetes Network Policies
+
+Core Concept:
+A NetworkPolicy is a Kubernetes resource that controls traffic flow to and from Pods. It acts as a virtual firewall for your pods, defining how they are allowed to communicate with each other and other network endpoints.
+
+Key Characteristics:
+
+    Namespace-scoped: Policies are defined within a specific namespace.
+
+    Selector-based: Rules use label selectors to choose which pods the policy applies to (podSelector).
+
+    Default Deny: By default, all traffic is allowed between pods. A NetworkPolicy creates a default-deny state for the pods it selects. Any traffic not explicitly permitted by an ingress or egress rule is then blocked.
+
+    Directional Rules: Policies contain ingress (inbound) and/or egress (outbound) rules.
+
+Common Use Cases:
+
+    Isolating Pods: Restrict frontend pods to only talk to backend pods.
+
+    Multi-tier Applications: Allow web pods to connect to the API on app pods, but deny direct access to the database pods from the web tier.
+
+    Default Deny All: Create a policy that blocks all ingress traffic to a pod as a security baseline, then add rules to allow specific communications.
+
+Important Prerequisite:
+The Kubernetes cluster must use a Container Network Interface (CNI) plugin that supports NetworkPolicy (e.g., Calico, Cilium, Weave Net). The implementation is not provided by Kubernetes itself.
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+service/networking/networkpolicy.yaml   
+
+--------------------------------------------------------------------------------------------------------------
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: test-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - ipBlock:
+        cidr: 172.17.0.0/16
+        except:
+        - 172.17.1.0/24
+    - namespaceSelector:
+        matchLabels:
+          project: myproject
+    - podSelector:
+        matchLabels:
+          role: frontend
+    ports:
+    - protocol: TCP
+      port: 6379
+  egress:
+  - to:
+    - ipBlock:
+        cidr: 10.0.0.0/24
+    ports:
+    - protocol: TCP
+      port: 5978
+
+---------------------------------------------------------------------------------------------------------------------
+
+What is a ResourceQuota?
+
+ResourceQuota is a Kubernetes object used to limit resource consumption (CPU, memory, storage, number of objects, etc.) within a namespace.
+
+It ensures fair sharing of cluster resources and prevents a single team/app from consuming all resources.
+
+🔹 Key Features
+
+Namespace Scope – Quotas apply only to the namespace where they are created.
+
+Resource Limits – Control compute resources (CPU, memory) and storage usage.
+
+Object Count Limits – Restrict number of pods, services, secrets, ConfigMaps, PersistentVolumeClaims (PVCs), etc.
+
+Enforced at Admission – Kubernetes API server checks quotas when new resources are created.
+
+🔹 Common Use Cases
+
+Prevent a namespace from consuming all cluster resources.
+
+Allocate fair resources across multiple teams/projects.
+
+Limit number of expensive objects (e.g., LoadBalancers, PVCs).
+
+-------------------------------------------------------------------------------------------
+
+policy/quota.yaml
+
+-------------------------------------------------------------------------------------------
+
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: pods-high
+  spec:
+    hard:
+      cpu: "1000"
+      memory: "200Gi"
+      pods: "10"
+    scopeSelector:
+      matchExpressions:
+      - operator: In
+        scopeName: PriorityClass
+        values: ["high"]
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: pods-medium
+  spec:
+    hard:
+      cpu: "10"
+      memory: "20Gi"
+      pods: "10"
+    scopeSelector:
+      matchExpressions:
+      - operator: In
+        scopeName: PriorityClass
+        values: ["medium"]
+- apiVersion: v1
+  kind: ResourceQuota
+  metadata:
+    name: pods-low
+  spec:
+    hard:
+      cpu: "5"
+      memory: "10Gi"
+      pods: "10"
+    scopeSelector:
+      matchExpressions:
+      - operator: In
+        scopeName: PriorityClass
+        values: ["low"]
+----------------------------------------------------------------------------------------------------------
+
+🔹ConfigMap
+
+Purpose: Store non-confidential configuration data (key–value pairs).
+
+Usage: Keeps configuration separate from container images (12-factor app principle).
+
+Scope: Used by pods as environment variables, command-line args, or mounted volumes.
+----------------------------------------
+Example: ConfigMap
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: dev
+data:
+  APP_MODE: "production"
+  LOG_LEVEL: "debug"
+--------------------------------------
+Using ConfigMap in Pod
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-pod
+spec:
+  containers:
+    - name: myapp
+      image: nginx
+      envFrom:
+        - configMapRef:
+            name: app-config
+-------------------------------------------
+
+🔹 Secret
+
+Purpose: Store sensitive data (passwords, API keys, tokens).
+
+Encoded: Data stored in Base64 encoding (not encrypted by default).
+
+Usage: Mounted as files or exposed as environment variables.
+
+Types: Opaque (default), docker-registry, tls, etc.
+
+--------------------------------------------------
+Example: Secret
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: db-secret
+  namespace: dev
+type: Opaque
+data:
+  username: YWRtaW4=        # "admin"
+  password: cGFzc3dvcmQ=    # "password"
+---------------------------------------------
+
+Using Secret in Pod
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db-pod
+spec:
+  containers:
+    - name: db-client
+      image: mysql
+      env:
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: username
+-----------------------------------------------
+
+🔹 Difference Between ConfigMap & Secret
+
+| Feature   | ConfigMap          | Secret                                           |
+| --------- | ------------------ | ------------------------------------------------ |
+| Stores    | Non-sensitive data | Sensitive data                                   |
+| Encoding  | Plain text         | Base64 encoded                                   |
+| Use cases | App configs, flags | Passwords, API keys                              |
+| Security  | Less secure        | More secure (RBAC, encryption at rest supported) |
+-------------------------------------------------------------------------------------
+
+👉 In short:
+
+Use ConfigMap for app configs.
+
+Use Secret for sensitive info like passwords & tokens.
+
+-------------------------------------------------------------------------------
+
+Ingress:
+
+An API object that manages external access to the services in a cluster, typically HTTP.
+
+Ingress may provide load balancing, SSL termination and name-based virtual hosting.
+
+An Ingress may be configured to give Services externally-reachable URLs, load balance traffic, terminate SSL / TLS, and offer name-based virtual hosting. An Ingress controller is responsible for fulfilling the Ingress, usually with a load balancer, though it may also configure your edge router or additional frontends to help handle the traffic.
+
+An Ingress does not expose arbitrary ports or protocols. Exposing services other than HTTP and HTTPS to the internet typically uses a service of type Service.Type=NodePort or Service.Type=LoadBalancer.
+
+Prerequisites
+You must have an Ingress controller to satisfy an Ingress. Only creating an Ingress resource has no effect.
+--------------------------------------------------------------------
+service/networking/minimal-ingress.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx-example
+  rules:
+  - http:
+      paths:
+      - path: /testpath
+        pathType: Prefix
+        backend:
+          service:
+            name: test
+            port:
+              number: 80
+---------------------------------------------------------
+
+Terminology
+
+For clarity, this guide defines the following terms:
+
+    Node: A worker machine in Kubernetes, part of a cluster.
+    Cluster: A set of Nodes that run containerized applications managed by Kubernetes. For this example, and in most common Kubernetes deployments, nodes in the cluster are not part of the public internet.
+    Edge router: A router that enforces the firewall policy for your cluster. This could be a gateway managed by a cloud provider or a physical piece of hardware.
+    Cluster network: A set of links, logical or physical, that facilitate communication within a cluster according to the Kubernetes networking model.
+    Service: A Kubernetes Service that identifies a set of Pods using label selectors. Unless mentioned otherwise, Services are assumed to have virtual IPs only routable within the cluster network.
+
+References: https://kubernetes.io/docs/concepts/services-networking/ingress/

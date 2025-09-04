@@ -1,0 +1,23 @@
+---
+- name: Uninstall Nginx
+  hosts: all
+  become: yes 
+
+  tasks:
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Ensure Nginx is stopped
+      service:
+        name: nginx
+        state: stopped
+
+    - name: Uninstall Nginx
+      apt:
+        name: nginx
+        state: absent
+
+    - name: Print a success message
+      ansible.builtin.debug:
+        msg: "Nginx has been uninstalled sucessfully"

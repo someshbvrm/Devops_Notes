@@ -1,0 +1,110 @@
+BUILDING WAR FILE
+
+
+Login to Jenkins
+Goto Manage Jenkins
+    Add the maven installation
+
+New Item
+Create a project as Freestyle Project
+
+In the Project
+
+Source Code Management
+    Provide Git Repo URL (Example# https://github.com/kliakos/sparkjava-war-example.git)
+				https://github.com/jenkinsci/hello-world-maven-builder.git
+Build Steps
+    Select "Invoke top-level Maven targets"
+    Maven Version - Select the version installed (dropdown)
+    Goals         - clean test package (type exactly)
+Post Build Actions
+    Give "**/*.war" (as we are building war artifact)
+Apply and Save.
+
+# If you want to change these configurations you need to go to Configure option in this project.
+
+Click Build Now
+Click the created build and check the console output for execution logs if the build is failed
+
+----------------------------------------------------------------------------------
+
+BUILDING JAR FILE
+
+Git Repo URL https://github.com/jenkins-docs/simple-java-maven-app.git
+
+Post Build Actions - **/*.jar or target/*.jar
+
+Rest is same.
+---------------------------------------------------------------------------------
+
+Building with Gradle
+
+Goto Manage Jenkins
+    Add the Gradle installation
+
+Gradle needs build.gradle
+goal - clean build
+
+gradle sample jar git url - https://github.com/andyjduncan/gradle-example.git
+
+Post Build Actions - build/libs/*.jar
+------------------------------------------------------------------------------------
+
+Building with Ant
+Ant needs build.xml
+goal - clean jar
+
+Post Build Actions - dist/*.jar
+
+ant sample jar git url - https://github.com/jenkinsci/model-ant-project.git
+
+-------------------------------------------------------------------------------
+
+Configuring a node (agent)
+
+(For Launch method Connecting it to the controller):
+
+Go to Jenkins → Manage Jenkins → Nodes → New Node.
+Give a name, choose Permanent Agent, click OK.
+
+Configure:
+# of executors = 1
+Remote root dir = /home/jenkins (on agent machine)
+Labels = (e.g., linux)
+Launch method = Launch agent by connecting it to the controller
+Save.
+
+Open the node’s page in Jenkins → you’ll see the agent.jar download link and the JNLP command with a secret key.
+
+Steps on the Agent Machine:
+Install Java (java -version should work).
+Create remote root directory (e.g., /home/jenkins).
+Download agent.jar from Jenkins (usually at http://<jenkins-server>:8080/jnlpJars/agent.jar).
+Run the connection command (given on Jenkins node page), for example:
+
+----------------------------------------------------------------------------
+
+Configuring a node (agent)
+
+(For Launch agent via SSH):
+
+Go to Jenkins → Manage Jenkins → Nodes → New Node.
+
+Give a name, choose Permanent Agent, click OK.
+
+Configure:
+# of executors = 1
+Remote root dir = /home/jenkins (on agent machine)
+Labels = (e.g., linux)
+Launch method = Launch agent via SSH
+Save.
+
+On the agent machine:
+Install Java
+Create /home/jenkins
+Allow SSH access from Jenkins master
+
+---------------------------------------------------------------------------
+
+
+

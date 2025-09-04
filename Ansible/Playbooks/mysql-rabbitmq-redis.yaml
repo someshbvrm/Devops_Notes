@@ -1,0 +1,198 @@
+---
+- name: Install MySQL, RabbitMQ, and Redis on Ubuntu EC2
+  hosts: ubuntu_servers
+  become: yes
+  gather_facts: yes
+
+  vars:
+    mysql_root_password: "Cloudsoft@123"
+    rabbitmq_admin_user: "admin"
+    rabbitmq_admin_password: "Rabbit@123"
+
+  tasks:
+
+    #################################
+    # 0. Update APT and install prerequisites
+    #################################
+    - name: Update apt cache and upgrade packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install required packages
+      apt:
+        name:
+          - curl
+          - gnupg
+          - lsb-release
+          - apt-transport-https
+          - software-properties-common
+          - python3-pymysql
+        state: present
+
+    #################################
+    # 1. Install MySQL
+    #################################
+    - name: Set MySQL root password
+      debconf:
+        name: mysql-server
+        question: "mysql-server/root_password"
+        value: "{{ mysql_root_password }}"
+        vtype: "password"
+
+    - name: Confirm MySQL root password
+      debconf:
+        name: mysql-server
+        question: "mysql-server/root_password_again"
+        value: "{{ mysql_root_password }}"
+        vtype: "password"
+
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Ensure MySQL is running
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    #################################
+    # 2. REDIS INSTALLATION
+    #################################
+    - name: Install Redis
+      apt:
+        name: redis-server
+        state: present
+
+    - name: Configure Redis to listen on all interfaces
+      lineinfile:
+        path: /etc/redis/redis.conf
+        regexp: '^bind '
+        line: 'bind 0.0.0.0'
+        backup: yes
+
+    - name: Ensure Redis is running
+      service:
+        name: redis-server
+        state: started
+        enabled: yes
+
+    #################################
+    # 3. ERLANG + RABBITMQ INSTALLATION
+    #################################
+    - name: Add Team RabbitMQ signing key
+      shell: |
+        curl -1sLf "https://keys.openpgp.org/vks/v1/by-fingerprint/0A9AF2115F4687BD29803A206B73A36E6026DFCA" \
+        | gpg --dearmor \
+        | tee /usr/share/keyrings/com.rabbitmq.team.gpg > /dev/null
+      args:
+        executable: /bin/bash
+
+    - name: Add RabbitMQ repositories
+      copy:
+        dest: /etc/apt/sources.list.d/rabbitmq.list
+        content: |
+          ## Modern Erlang/OTP releases
+          deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb1.rabbitmq.com/rabbitmq-erlang/ubuntu/noble noble main
+          deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb2.rabbitmq.com/rabbitmq-erlang/ubuntu/noble noble main
+
+          ## Latest RabbitMQ releases
+          deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb1.rabbitmq.com/rabbitmq-server/ubuntu/noble noble main
+          deb [arch=amd64 signed-by=/usr/share/keyrings/com.rabbitmq.team.gpg] https://deb2.rabbitmq.com/rabbitmq-server/ubuntu/noble noble main
+
+    - name: Update package indices
+      apt:
+        update_cache: yes
+
+    - name: Install Erlang packages
+      apt:
+        name:
+          - erlang-base
+          - erlang-asn1
+          - erlang-crypto
+          - erlang-eldap
+          - erlang-ftp
+          - erlang-inets
+          - erlang-mnesia
+          - erlang-os-mon
+          - erlang-parsetools
+          - erlang-public-key
+          - erlang-runtime-tools
+          - erlang-snmp
+          - erlang-ssl
+          - erlang-syntax-tools
+          - erlang-tftp
+          - erlang-tools
+          - erlang-xmerl
+        state: present
+
+    - name: Install RabbitMQ server
+      apt:
+        name: rabbitmq-server
+        state: present
+        force: yes
+
+    - name: Enable RabbitMQ management plugin
+      command: rabbitmq-plugins enable rabbitmq_management
+      args:
+        creates: /etc/rabbitmq/enabled_plugins
+
+    - name: Ensure RabbitMQ is running
+      service:
+        name: rabbitmq-server
+        state: started
+        enabled: yes
+
+    - name: Wait for RabbitMQ to initialize
+      pause:
+        seconds: 10
+
+    - name: Ensure RabbitMQ admin user exists
+      community.rabbitmq.rabbitmq_user:
+        user: "{{ rabbitmq_admin_user }}"
+        password: "{{ rabbitmq_admin_password }}"
+        tags: administrator
+        state: present
+        force: yes
+
+    - name: Set RabbitMQ admin user permissions
+      community.rabbitmq.rabbitmq_user:
+        user: "{{ rabbitmq_admin_user }}"
+        configure_priv: ".*"
+        write_priv: ".*"
+        read_priv: ".*"
+        state: present
+
+    #################################
+    # 4. VERIFICATION
+    #################################
+    - name: Verify Redis installation
+      command: redis-cli ping
+      register: redis_status
+      ignore_errors: yes
+
+    - name: Show Redis status
+      debug:
+        msg: "Redis Response: {{ redis_status.stdout }}"
+
+    - name: Verify RabbitMQ installation
+      command: rabbitmqctl status
+      register: rabbitmq_status
+      ignore_errors: yes
+
+    - name: Show RabbitMQ status
+      debug:
+        msg: "RabbitMQ installed successfully"
+
+  handlers:
+    - name: restart redis
+      service:
+        name: redis-server
+        state: restarted
+
+    - name: restart rabbitmq
+      service:
+        name: rabbitmq-server
+        state: restarted

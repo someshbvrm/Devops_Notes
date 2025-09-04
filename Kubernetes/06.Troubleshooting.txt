@@ -1,0 +1,130 @@
+Kubeadm bootstraps the K8s cluster.
+Kubespray is a role in Ansible which also bootstraps the K8s cluster.
+Elastic Kubernetes Service
+Azure Kubernetes Service 
+Google Kubernetes Engine 
+
+Question:
+How many nodes are there in your K8s cluster
+20 nodes autoscalled till 40.
+
+In EKS cluster backend we can have nodes running as instances or aws provides one serverless environment called as fargate.
+We need to give roles to manage the permissions for EKS
+
+-------------------------------------------------------------------
+
+Troubleshooting K8s cluster:
+
+kubectl get nodes
+kubectl cluster-info
+kubectl cluster-info dump
+
+kubectl describe node nodename
+
+Control Plane nodes
+
+    /var/log/kube-apiserver.log - API Server, responsible for serving the API
+    /var/log/kube-scheduler.log - Scheduler, responsible for making scheduling decisions
+    /var/log/kube-controller-manager.log - a component that runs most Kubernetes built-in controllers, with the notable exception of scheduling (the kube-scheduler handles scheduling).
+
+Worker Nodes
+
+    /var/log/kubelet.log - logs from the kubelet, responsible for running containers on the node
+    /var/log/kube-proxy.log - logs from kube-proxy, which is responsible for directing traffic to Service endpoints
+
+Contributing causes
+
+    VM(s) shutdown
+    Network partition within cluster, or between cluster and users
+    Crashes in Kubernetes software
+    Data loss or unavailability of persistent storage (e.g. GCE PD or AWS EBS volume)
+    Operator error, for example, misconfigured Kubernetes software or application software
+
+Check master and node metrics from Prometheus and Grafana
+
+---------------------------------------------------------------------
+
+Debugging Kubernetes Nodes With Kubectl
+
+kubectl debug node nodename
+
+Debugging Kubernetes Pods:
+
+kubectl get pods -n namespace
+
+kubectl describe pods ${POD_NAME}
+
+If Pod status is pending:
+-Scheduler is not able to schedule the pod on node.
+-All nodes are fully loaded, we don't have enough resources in nodes to run new pods.
+-Node affinity or taints are causing problems to schedule pods on nodes
+-If new POD host port is already in use, So the new pod cannot be scheduled
+
+IF Pod is in waiting status:
+If a Pod is stuck in the Waiting state, then it has been scheduled to a worker node, but it can't run on that machine. Again, the information from kubectl describe ... should be informative. The most common cause of Waiting pods is a failure to pull the image. There are three things to check:
+
+    Make sure that you have the name of the image correct.
+    Have you pushed the image to the registry?
+    Try to manually pull the image to see if the image can be pulled. For example, if you use Docker on your PC, run docker pull <image>
+
+Check the image name, tag, image credentials and network issues or firewall or proxy
+
+
+Kubectl get events
+kubectl get events -n namespace
+
+kubectl logs ${POD_NAME} ${CONTAINER_NAME}
+
+kubectl exec ${POD_NAME} -c ${CONTAINER_NAME} -- ${CMD} ${ARG1} ${ARG2} ... ${ARGN}
+kubectl exec cassandra -- cat /var/log/cassandra/system.log
+
+--------------------------------------------------------------------------------
+
+Pod CrashLoopBackOff error:
+--------------------------------------------------------------------------------
+
+CrashLoopBackOff is a Kubernetes state representing a restart loop that is happening in a Pod: a container in the Pod is started, but crashes and is then restarted, over and over again.
+
+Note that the reason why it’s restarting is because its restartPolicy is set to Always(by default) or OnFailure. The kubelet is then reading this configuration and restarting the containers in the Pod and causing the loop. This behavior is actually useful, since this provides some time for missing resources to finish loading, as well as for us to detect the problem and debug it – more on that later.
+
+Common reasons for a CrashLoopBackOff
+It’s important to note that a CrashLoopBackOff is not the actual error that is crashing the pod. Remember that it’s just displaying the loop happening in the STATUS column. You need to find the underlying error affecting the containers.
+
+Some of the errors linked to the actual application are:
+
+Misconfigurations: Like a typo in a configuration file.
+A resource is not available: Like a PersistentVolume that is not mounted.
+Wrong command line arguments: Either missing, or the incorrect ones.
+Bugs & Exceptions: That can be anything, very specific to your application.
+And finally, errors from the network and permissions are:
+
+You tried to bind an existing port.
+The memory limits are too low, so the container is Out Of Memory killed.
+Errors in the liveness probes are not reporting the Pod as ready.
+Read-only filesystems, or lack of permissions in general.
+
+
+Course of Action:
+
+Check the pod description.
+Check the pod logs.
+Check the events.
+Check the deployment.
+check the Dockerfile
+Commands or Entrypoint we have given in dockerfile
+What are the arguments or env details we are passing
+restart policy
+PV and PVC permissions
+get the details from Monitoring tools
+
+pick 10 issues, steps to identify and how it fixed
+
+common kubernetes error codes
+
+Please go through below topics also
+init containers
+jobs
+cron jobs
+CRD
+Kubernetes static pods
+

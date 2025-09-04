@@ -1,0 +1,192 @@
+🚀 Installation Scripts 
+===========================
+
+ 1\. Ansible
+
+    sudo apt update -y
+    sudo apt install -y software-properties-common
+    sudo add-apt-repository --yes --update ppa:ansible/ansible
+    sudo apt install -y ansible
+    ansible --version
+    
+
+ 2\. Ant
+
+    sudo apt update -y
+    sudo apt install -y ant
+    ant -version
+    
+
+ 3\. Apache HTTP Server
+
+    sudo apt update -y
+    sudo apt install -y apache2
+    sudo systemctl enable apache2 --now
+    
+
+ 4\. Docker
+
+    sudo apt update -y
+    sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg
+    echo "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu $(lsbrelease -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+    sudo apt update -y
+    sudo apt install -y docker-ce docker-ce-cli containerd.io
+    sudo usermod -aG docker $USER
+    
+
+ 5\. Gradle
+
+    sudo apt update -y
+    sudo apt install -y wget unzip openjdk-17-jdk
+    wget https://services.gradle.org/distributions/gradle-8.9-bin.zip
+    sudo unzip gradle-8.9-bin.zip -d /opt/
+    sudo ln -s /opt/gradle-8.9 /opt/gradle
+    echo 'export PATH=$PATH:/opt/gradle/bin' | sudo tee /etc/profile.d/gradle.sh
+    source /etc/profile.d/gradle.sh
+    gradle -v
+    
+
+ 6\. Jenkins
+
+    sudo apt update -y
+    sudo apt install -y openjdk-17-jdk
+    curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
+      /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+    echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+      https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+      /etc/apt/sources.list.d/jenkins.list > /dev/null
+    sudo apt update -y
+    sudo apt install -y jenkins
+    sudo systemctl enable jenkins --now
+    
+
+ 7\. JFrog Artifactory OSS
+
+    sudo apt update -y
+    sudo apt install -y wget
+    wget -qO - https://releases.jfrog.io/artifactory/jfrog-gpg-public/jfrogpublic.gpg | sudo apt-key add -
+    echo "deb https://releases.jfrog.io/artifactory/artifactory-debs focal contrib" | sudo tee /etc/apt/sources.list.d/jfrog-artifactory.list
+    sudo apt update -y
+    sudo apt install -y jfrog-artifactory-oss
+    sudo systemctl enable artifactory --now
+    
+
+ 8\. JBoss (WildFly)
+
+    sudo apt update -y
+    sudo apt install -y openjdk-17-jdk wget unzip
+    wget https://github.com/wildfly/wildfly/releases/download/30.0.0.Final/wildfly-30.0.0.Final.zip
+    unzip wildfly-30.0.0.Final.zip
+    sudo mv wildfly-30.0.0.Final /opt/wildfly
+    /opt/wildfly/bin/standalone.sh &
+    
+
+ 9\. Kubernetes (kubectl + minikube)
+
+    sudo apt update -y
+    sudo apt install -y curl apt-transport-https
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    sudo apt update -y
+    sudo apt install -y kubectl
+    curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube-linux-amd64 /usr/local/bin/minikube
+    
+
+ 10\. LAMP Stack
+
+    sudo apt update -y
+    sudo apt install -y apache2 mysql-server php libapache2-mod-php php-mysql
+    sudo systemctl enable apache2 mysql --now
+    
+
+ 11\. MERN Stack
+
+    curl -fsSL https://deb.nodesource.com/setup18.x | sudo -E bash -
+    sudo apt install -y nodejs npm mongodb
+    npm install -g express react react-dom mongoose
+    
+
+ 12\. MongoDB
+
+    wget -qO - https://pgp.mongodb.com/server-6.0.asc | sudo tee /etc/apt/trusted.gpg.d/mongodb-server-6.0.gpg > /dev/null
+    echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+    sudo apt update -y
+    sudo apt install -y mongodb-org
+    sudo systemctl enable mongod --now
+    
+
+ 13\. MySQL
+
+    sudo apt update -y
+    sudo apt install -y mysql-server
+    sudo systemctl enable mysql --now
+    
+
+ 14\. Nexus Repository
+
+    sudo apt update -y
+    sudo apt install -y openjdk-17-jdk wget
+    wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+    tar -xvzf latest-unix.tar.gz
+    sudo mv nexus-3 /opt/nexus
+    /opt/nexus/bin/nexus start
+    
+
+ 15\. PostgreSQL
+
+    sudo apt update -y
+    sudo apt install -y postgresql postgresql-contrib
+    sudo systemctl enable postgresql --now
+    
+
+ 16\. RabbitMQ
+
+    sudo apt update -y
+    sudo apt install -y curl gnupg apt-transport-https
+    curl -fsSL https://packagecloud.io/rabbitmq/rabbitmq-server/gpgkey | sudo apt-key add -
+    echo "deb https://packagecloud.io/rabbitmq/rabbitmq-server/ubuntu/ focal main" | sudo tee /etc/apt/sources.list.d/rabbitmq.list
+    sudo apt update -y
+    sudo apt install -y rabbitmq-server
+    sudo systemctl enable rabbitmq-server --now
+    
+
+ 17\. Redis
+
+    sudo apt update -y
+    sudo apt install -y redis-server
+    sudo systemctl enable redis-server --now
+    
+
+ 18\. SonarQube
+
+    sudo apt update -y
+    sudo apt install -y openjdk-17-jdk wget unzip
+    wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-10.5.0.90531.zip
+    unzip sonarqube-10.5.0.90531.zip
+    sudo mv sonarqube-10.5.0.90531 /opt/sonarqube
+    /opt/sonarqube/bin/linux-x86-64/sonar.sh start
+    
+
+ 19\. Terraform
+
+    sudo apt update -y
+    sudo apt install -y wget unzip
+    wget https://releases.hashicorp.com/terraform/1.9.2/terraform1.9.2linuxamd64.zip
+    unzip terraform1.9.2linuxamd64.zip
+    sudo mv terraform /usr/local/bin/
+    terraform -version
+    
+
+ 20\. Tomcat
+
+    sudo apt update -y
+    sudo apt install -y openjdk-17-jdk wget
+    wget https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.30/bin/apache-tomcat-10.1.30.tar.gz
+    tar -xvzf apache-tomcat-10.1.30.tar.gz
+    sudo mv apache-tomcat-10.1.30 /opt/tomcat
+    /opt/tomcat/bin/startup.sh
+    
+
+ 

@@ -1,0 +1,73 @@
+---
+- name: Configure UFW firewall to open ports for MySQL, Redis, and RabbitMQ
+  hosts: ubuntu_servers
+  become: yes
+  gather_facts: yes
+
+  vars:
+    # 🔴 SECURITY WARNING: These are INSECURE defaults
+    # In production, replace with specific IPs: "192.168.1.100", "10.0.0.0/24"
+    mysql_allowed_cidr: "0.0.0.0/0"
+    redis_allowed_cidr: "0..0.0/0"
+    rabbitmq_allowed_cidr: "0.0.0.0/0"
+    rabbitmq_management_allowed_cidr: "0.0.0.0/0"
+
+  tasks:
+    - name: Ensure UFW is installed
+      apt:
+        name: ufw
+        state: present
+
+    - name: Reset UFW to defaults (disables UFW, clears all rules)
+      ufw:
+        state: reset
+      ignore_errors: yes
+
+    - name: Allow SSH (keep this restricted in production!)
+      ufw:
+        rule: allow
+        port: '22'
+        proto: tcp
+        # 🔴 WARNING: This should be your specific IP, not 0.0.0.0/0
+        src: '0.0.0.0/0'
+
+    - name: Allow MySQL port (INSECURE - should be restricted)
+      ufw:
+        rule: allow
+        port: '3306'
+        proto: tcp
+        src: "{{ mysql_allowed_cidr }}"
+
+    - name: Allow Redis port (INSECURE - should be restricted)
+      ufw:
+        rule: allow
+        port: '6379'
+        proto: tcp
+        src: "{{ redis_allowed_cidr }}"
+
+    - name: Allow RabbitMQ AMQP port (INSECURE - should be restricted)
+      ufw:
+        rule: allow
+        port: '5672'
+        proto: tcp
+        src: "{{ rabbitmq_allowed_cidr }}"
+
+    - name: Allow RabbitMQ Management port (INSECURE - should be restricted)
+      ufw:
+        rule: allow
+        port: '15672'
+        proto: tcp
+        src: "{{ rabbitmq_management_allowed_cidr }}"
+
+    - name: Enable UFW firewall
+      ufw:
+        state: enabled
+        default: deny
+
+    - name: Show UFW status
+      command: ufw status verbose
+      register: ufw_status
+
+    - name: Display firewall configuration
+      debug:
+        msg: "{{ ufw_status.stdout_lines }}"

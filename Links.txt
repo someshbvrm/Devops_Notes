@@ -1,0 +1,45 @@
+https://us06web.zoom.us/j/83912928988?pwd=mbcCnaTaCRz7Smchoj3lQ7qEnk60Dt.1
+
+
+1. AWS Educate: https://www.awseducate.com/
+2. https://awseducate.instructure.com/
+3. AWS Skill Builder: https://skillbuilder.aws
+4. Reward Points to Get 100%. FREE Voucher: https://www.awseducate.com/student/s/etc-rewards
+5. Reddit Post:   / earning_50_off_voucher_with_etc_detailed_post  
+6. https://summits-india.virtual.awsevents.com
+
+
+www.console.aws.amazon.com
+
+User name	Password	Console sign-in URL
+Administrator	shaloM@316	https://004947019518.signin.aws.amazon.com/console
+S3Full		shaloM@316	https://004947019518.signin.aws.amazon.com/console
+ReadOnly	shaloM@316	https://004947019518.signin.aws.amazon.com/console
+
+https://siddharthqs.com/my-aws-notes
+
+https://github.com/asifvora/aws-solutions-architect-associate-notes
+or
+https://aws-solutions-architect-associate-notes.vercel.app/
+
+
+https://github.com/thyagomota/aws-labs  ##Outdated labs
+
+https://www.wellarchitectedlabs.com/
+https://catalog.workshops.aws/general-immersionday/en-US
+https://catalog.workshops.aws/networking/en-US
+https://workshops.aws/categories/Compute
+
+
+Static website 
+https://teleporthq.io/static-website-templates
+
+Complete Linux Course with Networking and Shell Scripting | Notes Provided
+https://www.youtube.com/watch?v=29eDuMjsEF8&t=3916s
+
+
+Learn Git – Full Course for Beginners (freecodecamp)
+https://www.youtube.com/watch?v=zTjRZNkhiEU&t=2772s
+
+Kubernetes Beginner To Expert Level In One Video | Ultimate Kubernetes Guide
+https://www.youtube.com/watch?v=JoHUi9KvnOA

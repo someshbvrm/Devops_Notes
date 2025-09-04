@@ -1,0 +1,9 @@
+After creating EKS Cluster
+
+From terminal
+
+aws sts get-caller-identity
+
+aws eks --region us-east-2 update-kubeconfig --name jpmcekscluster
+
+Reference: eksworship.com

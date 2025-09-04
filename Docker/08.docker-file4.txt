@@ -1,0 +1,126 @@
+Dockerfile best practices
+
+- Always use official images
+- Instead of writing from scratch use base images
+- Add files to volumes instead of images 
+- Use multistage Dockerfile
+- Scan the images before pushing to registry
+- Use COPY instead of ADD
+- use .dockerignore file to avoid unnecessary files to copy inside the image
+- Don't pass sensitive information like credentials, certificates in the image
+- Don't give root permissions and other privileges in the image
+- Update images frequently
+- Don't expose ports unnecessarily
+- Don't install packages unnecessarily
+- Use pipes | Some RUN commands depend on the ability to pipe the output of one command into another.
+  Example: RUN wget -O - https://some.site | wc -l > /number
+
+
+
+
+Multistage Dockerfile:
+
+- To reduce the size of image we need to use Multistage Dockerfile
+- If we use RUN/COPY/ADD commands to Dockerfile the image size will increase
+- Instead of keeping two docker images i.e., one for build and one for deployment/staging we can use another set of instructions
+
+Multi-stage builds:
+
+Multi-stage builds are useful to anyone who has struggled to optimize Dockerfiles while keeping them easy to read and maintain.
+Use multi-stage builds
+
+With multi-stage builds, you use multiple FROM statements in your Dockerfile. Each FROM instruction can use a different base, and each of them begins a new stage of the build. You can selectively copy artifacts from one stage to another, leaving behind everything you don't want in the final image.
+
+-----------------------------------------------------------------
+
+The following Dockerfile has two separate stages: one for building a binary, and another where the binary gets copied from the first stage into the next stage.
+
+# syntax=docker/dockerfile:1
+FROM golang:1.24
+WORKDIR /src
+COPY <<EOF ./main.go
+package main
+
+import "fmt"
+
+func main() {
+  fmt.Println("hello, world")
+}
+EOF
+RUN go build -o /bin/hello ./main.go
+
+FROM scratch
+COPY --from=0 /bin/hello /bin/hello
+CMD ["/bin/hello"]
+
+
+Note: 1st build is referred as 0, 2nd build is 1 and so on
+
+---------------------------------------------------------------------
+Using build names
+---------------------------------------------------------------------
+
+# syntax=docker/dockerfile:1
+FROM golang:1.24 AS build
+WORKDIR /src
+COPY <<EOF /src/main.go
+package main
+
+import "fmt"
+
+func main() {
+  fmt.Println("hello, world")
+}
+EOF
+RUN go build -o /bin/hello ./main.go
+
+FROM scratch
+COPY --from=build /bin/hello /bin/hello
+CMD ["/bin/hello"]
+
+
+Note: If "AS build" is not mentioned, it takes as 0,1,2...
+-------------------------------------------------------------------
+Java Spring boot Multistage Dockerfile
+------------------------------------------------------------------
+This is an example of a Dockerfile that makes use of multi-stage builds.
+
+
+#Stage 1
+# initialize build and set base image for first stage
+FROM maven:3.6.3-adoptopenjdk-11 as stage1
+# speed up Maven JVM a bit
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+# set working directory
+WORKDIR /opt/demo
+# copy just pom.xml
+COPY pom.xml .
+# go-offline using the pom.xml
+RUN mvn dependency:go-offline
+# copy your other files
+COPY ./src ./src
+# compile the source code and package it in a jar file
+RUN mvn clean install -Dmaven.test.skip=true
+#Stage 2
+# set base image for second stage
+FROM adoptopenjdk/openjdk11:jre-11.0.9_11-alpine
+# set deployment directory
+WORKDIR /opt/demo
+# copy over the built artifact from the maven image
+COPY --from=stage1 /opt/demo/target/demo.jar /opt/demo
+
+Note: Usually we do two builds i.e., for base image and staging
+
+----------------------------------------------------------------------
+
+Assignment: springboot, tomcat, nodejs, dotnet, python related dockerfiles
+
+---------------------------------------------------------------------------
+
+References:
+https://docs.docker.com/build/building/multi-stage/#use-multi-stage-builds
+https://codefresh.io/docs/docs/example-catalog/ci-examples/spring-boot-2/
+https://ionutbanu.medium.com/build-spring-boot-docker-image-using-multi-stage-dockerfile-2-13b9f1e89393
+https://docs.docker.com/build/building/best-practices/
+https://sysdig.com/blog/dockerfile-best-practices
+

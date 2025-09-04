@@ -1,0 +1,74 @@
+Docker components:
+
+    docker daemon /host/engine - docker cli
+
+    docker network
+
+    docker volumes
+
+    docker file - We can create our own customized Images using dockerfile
+
+    docker compose - If we want to create multiple containers we can use docker compose/stack
+
+    docker machine - We can create docker daemon on AWS or Azure
+
+    docker swarm
+
+    docker services
+
+    docker stack
+
+    dockerhub/DTR/ECR
+
+
+
+DOCKER COMPOSE
+
+Check this example --> https://github.com/docker/awesome-compose/tree/master/wordpress-mysql
+---------------------------------------------------------------------------------
+sample compose.yaml
+---------------------------------------------------------------------------------
+
+
+services:
+  db:
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
+    command: '--default-authentication-plugin=mysql_native_password'
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=somewordpress
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    expose:
+      - 3306
+      - 33060
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - 80:80
+    restart: always
+    environment:
+      - WORDPRESS_DB_HOST=db
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+volumes:
+  db_data:
+
+  ---------------------------------------------------------------------------------
+
+
+Suppose the file is docker-compose.yaml
+
+docker-compose up	#Creates multiple containers up and running
+docker-compose up -d 	#Creates and starts in detached mode
+docker-compose down	#Removes the containers
+
+
+    

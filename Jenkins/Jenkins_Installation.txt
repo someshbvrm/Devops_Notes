@@ -1,0 +1,40 @@
+Sudo apt update
+
+Install Java
+sudo apt install fontconfig openjdk-21-jre
+
+Add Jenkins repo to apt
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+sudo apt update
+
+sudo apt install Jenkins -y
+
+You can enable the Jenkins service to start at boot with the command:
+sudo systemctl enable jenkins
+
+You can start the Jenkins service with the command:
+sudo systemctl start jenkins
+
+You can check the status of the Jenkins service using the command:
+sudo systemctl status jenkins
+
+Jenkins URL 
+http://localhost:8080
+
+Browse to http://localhost:8080 (or whichever port you configured for Jenkins when installing it) and wait until the Unlock Jenkins page appears.
+
+From the Jenkins console log output, copy the automatically-generated alphanumeric password.
+
+The command: sudo cat /var/lib/jenkins/secrets/initialAdminPassword will print the password at console.
+
+Note:
+
+If Jenkins fails to start because a port is in use, run systemctl edit jenkins and add the following:
+
+[Service]
+Environment="JENKINS_PORT=8081"

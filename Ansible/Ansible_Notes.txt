@@ -1,0 +1,376 @@
+Ansible is an open-source automation tool that helps you manage computers, deploy applications, and configure systems, all without needing to install any special software on the machines it controls. It uses simple text files (YAML) to describe what to do and connects over SSH.
+
+architecture in a **nutshell paragraph**:
+
+👉 Ansible works on a simple controller–node model. The control node is where Ansible is installed and playbooks are written. It connects to managed nodes (target servers) over SSH without needing any agent software on them. An inventory file lists all these target servers. When a playbook is run, Ansible uses modules (small programs) to perform tasks like installing packages, copying files, or configuring services on the managed nodes. Playbooks, written in YAML, act like recipes for automation. Roles help organize these playbooks for reuse. This agentless, push-based architecture makes Ansible simple, lightweight, and easy to scale.**
+
+Do you also want me to make this into a **bullet-point version for interview quick notes**?
+
+📌 Main components:
+
+Control Node (Controller) 🖥️
+The machine where Ansible is installed.
+Runs playbooks and sends tasks to other machines.
+
+Managed Nodes (Targets) 🖧
+The servers/computers Ansible manages.
+No agent/software needed — just SSH + Python.
+
+Inventory 📋
+A list of target machines (IP addresses/hostnames).
+Defines which servers to manage.
+
+Modules ⚙️
+Small programs Ansible runs on nodes (e.g., install a package, copy a file).
+
+Playbooks 📖
+YAML files that describe automation steps (like recipes).
+
+Plugins 🔌
+Extra tools that extend Ansible’s features (e.g., logging, connections).
+
+Roles 📦
+A structured way to organize playbooks, variables, files, and tasks.
+
+-----------------------------------------------------------------------------------
+
+Playbooks are developed in yaml
+Modules are developed in python
+
+
+Controller instance should have passwordless access to the host instance(node)
+Creating an ubuntu instance
+take ssh to the instance.
+ssh-keygen	#📂Location where key created : /home/ubuntu/.ssh/id_rsa.pub
+cat id_rsa.pub and copy the content
+
+take ssh to the host instance
+cd ~/.ssh
+vi authorized_keys
+and pasted the content here and save
+
+Now Control can connect host withtout password
+ssh user@public-ip
+
+-------------------------------------------------
+
+Install ansible on controller
+sudo apt update
+sudo apt upgrade -y
+sudo apt install ansible -y
+
+create a directory in home
+mkdir ansibleplaybooks
+
+create inventory in this new directory hosts.
+vi hosts	
+		 
+		ip address
+
+		3.88.234.162
+		 
+or
+		 
+		[webservers]
+		3.88.234.162
+		3.88.234.166
+		3.88.234.168
+
+		[dbservers]
+		3.88.234.162
+		3.88.234.167
+
+To check whether the controller is connecting with hosts inventory file
+ansible all -m ping -i hosts
+
+To check whether the controller is connecting with webservers
+ansible webservers -m ping -i hosts
+
+------------------------------------------------------------------
+
+Ad-hoc commands from chatgpt
+------------------------------------------------------------------
+
+Syntax - ansible <host-pattern> -m <module-name> -a <module-arguments>
+
+ansible all -m ping -i hosts → Check connectivity to all hosts
+
+ansible all -m shell -a "uptime" -i hosts 👉 Show uptime of all hosts
+
+ansible all -m shell -a "df -h" -i hosts 👉 Show disk usage
+
+ansible all -m shell -a "free -m" -i hosts 👉 Show memory usage
+
+ansible all -m copy -a "src=/etc/hosts dest=/tmp/hosts" -i hosts 👉 Copy file to hosts
+
+ansible all -m file -a "path=/tmp/testdir state=directory" -i hosts 👉 Create directory
+
+ansible all -m file -a "path=/tmp/testfile state=absent" -i hosts 👉 Remove file
+
+ansible all -m yum -a "name=httpd state=present" -i hosts --become 👉 Install package with yum
+
+ansible all -m yum -a "name=httpd state=absent" -i hosts --become 👉 Remove package with yum
+
+ansible all -m apt -a "name=nginx state=present" -i hosts --become 👉 Install package with apt
+
+ansible all -m service -a "name=httpd state=started" -i hosts --become 👉 Start service
+
+ansible all -m service -a "name=httpd state=stopped" -i hosts --become 👉 Stop service
+
+ansible all -m user -a "name=devops state=present" -i hosts --become 👉 Create user
+
+ansible all -m user -a "name=devops state=absent" -i hosts --become 👉 Delete user
+
+ansible all -m command -a "whoami" -i hosts 👉 Show current user
+
+ansible all -m command -a "ls -l /tmp" -i hosts 👉 List files in /tmp
+
+
+📖https://docs.ansible.com/ansible/latest/command_guide/intro_adhoc.html
+----------------------------------------------------------------------------
+
+ad-hoc commands in cloudsoft class video
+--------------------------------------------------------------------------
+
+ansible webservers -m ansible.builtin.shell -a 'echo $TERM' -i hosts
+👉 Runs a shell command (echo $TERM) on all webservers.
+
+ansible webservers -m ansible.builtin.copy -a "src=/etc/hosts dest=/tmp/hosts"
+👉 Copies /etc/hosts file from control node to /tmp/hosts on webservers.
+
+ansible webservers -m ansible.builtin.file -a "dest=/srv/foo/a.txt mode=600"
+👉 Sets permissions 600 for file /srv/foo/a.txt.
+
+ansible webservers -m ansible.builtin.file -a "dest=/srv/foo/b.txt mode=600 owner=mdehaan group=mdehaan"
+👉 Sets file /srv/foo/b.txt with 600 permissions, owner mdehaan, group mdehaan.
+
+ansible webservers -m ansible.builtin.file -a "dest=/path/to/c mode=755 owner=mdehaan group=mdehaan state=directory"
+👉 Ensures /path/to/c is a directory with 755 permissions, owner/group mdehaan.
+
+ansible webservers -m ansible.builtin.file -a "dest=/path/to/c state=absent"
+👉 Deletes /path/to/c if it exists.
+
+ansible webservers -m ansible.builtin.apt -a "name=nginx state=present"
+👉 Installs nginx package using apt.
+
+ansible webservers -m ansible.builtin.apt -a "name=nginx state=started"
+👉 Starts nginx package using apt.
+
+ansible webservers -m ansible.builtin.apt -a "name=nginx state=stopped"
+👉 Stops nginx package using apt.
+
+ansible webservers -m ansible.builtin.apt -a "name=nginx state=restarted"
+👉 Restarts nginx package using apt.
+
+ansible webservers -m ansible.builtin.yum -a "name=acme-1.5 state=present"
+👉 Installs acme-1.5 package using yum.
+
+ansible webservers -m ansible.builtin.yum -a "name=acme state=latest"
+👉 Updates acme package to the latest version using yum.
+
+ansible webservers -m ansible.builtin.yum -a "name=acme state=absent"
+👉 Removes acme package using yum.
+
+--------------------------------------------------------------------------------
+
+Instead of running ad-hoc commands we use playbook scripts
+Try the example from https://sujitpatel.in/article/how-to-install-nginx-using-ansible-playbook/
+
+
+Created nginx.yaml
+
+---
+- hosts: web
+  tasks:
+    - name: install nginx
+      apt: name=nginx state=latest
+    - name: start nginx
+      service:
+          name: nginx
+          state: started
+
+Run the playbook
+
+ansible-playbook nginx.yaml --syntax-check -i hosts	#to check syntax errors
+ansible-playbook nginx.yaml --list-hosts -i hosts	#to check the list of hosts
+ansible-playbook nginx.yaml -i hosts			#Running playbook
+
+Observe the script it is for root user. We run from ubuntu user in ec2 instance
+we need to elevate ubuntu to get sudo permissions
+
+---
+- hosts: web
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: install nginx
+      apt: name=nginx state=latest
+    - name: start nginx
+      service:
+          name: nginx
+          state: started
+
+📝How many times playbook runs, it is called place
+
+----------------------------------------------------------------------
+
+Example playbook script
+
+--------------------------------------------------------------------
+
+---
+- name: Install httpd on Amazon Linux
+  hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Update package cache
+      yum:
+        name: '*'
+        state: latest
+      tags:
+        - update
+
+    - name: Install httpd package
+      yum:
+        name: httpd
+        state: present
+      tags:
+        - httpd
+
+    - name: Start and enable httpd service
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+      tags:
+        - httpd
+
+✔️ Now the package or webserver httpd is started
+
+Now we restart the webserver httpd. Replace started with restarted in systemd state.
+
+---
+- name: Install httpd on Amazon Linux
+  hosts: webservers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Update package cache
+      yum:
+        name: '*'
+        state: latest
+      tags:
+        - update
+
+    - name: Install httpd package
+      yum:
+        name: httpd
+        state: present
+      tags:
+        - httpd
+
+    - name: Start and enable httpd service
+      systemd:
+        name: httpd
+        enabled: yes
+        state: started
+      tags:
+        - httpd
+
+Now when we run playbook multiple times. everytime it gets restarted which is not to be done in production
+
+So we use Notify and Handlers. Notify and Handler names should match.
+-----------------------------------------------------------------------------
+nginx.yaml
+
+---
+- name: Install and Configure Nginx
+  hosts: your_target_servers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+      notify:
+        - Restart Nginx
+
+    - name: Copy Nginx Configuration
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - Reload Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+
+📝Here we used handlers instead of tasks. So that notify triggers the handlers. Out of the concept - Restart and Reload do different functionalities. Restart restarts the service while the other reloads the configuration
+
+nginxhandler.yaml
+
+---
+- name: Install and Configure Nginx
+  hosts: your_target_servers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+
+      notify:
+        - Restart Nginx
+
+    - name: Copy Nginx Configuration
+      copy:
+        src: index.html
+        dest: /var/www/html/
+      notify:
+        - Reload Nginx
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+
+    - name: Reload Nginx
+      service:
+        name: nginx
+        state: reloaded
+
+
+Always do systax-check before running playbook
+ansible-playbook nginxhandler.yaml --syntax-check -i hosts	#to check syntax errors
+ansible-playbook nginxhandler.yaml --list-hosts -i hosts	#to check the list of hosts
+----------------------------------------------------------------------------------------------
+🔑By default ansible collects all the facts from all remote machines in hosts inventory
+If you dont want. Include gather_facts: no. Module name to collect facts is setup
+
+----------------------------------------------------------------------------------------------
+
+---
+- name: Install and Configure Nginx
+  hosts: your_target_servers
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install Nginx
+      apt:
+        name: nginx
+        state: present
+

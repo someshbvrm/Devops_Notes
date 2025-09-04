@@ -1,0 +1,40 @@
+---
+- name: Configure AWS Security Group for backend services
+  hosts: localhost  # Runs on your Ansible control node, not the target server
+  connection: local
+  gather_facts: false
+  collections:
+    - amazon.aws
+
+  vars:
+    security_group_id: "sg-0a1b2c3d4e5f6g7h8"  # <<< REPLACE with your instance's SG ID
+    admin_ip: "{{ lookup('env', 'MY_IP') }}/32"  # Gets your IP from an environment variable
+
+  tasks:
+    - name: Get current public IP for whitelisting
+      set_fact:
+        my_public_ip: "{{ admin_ip }}"
+
+    - name: Add rules to security group
+      ec2_security_group:
+        group_id: "{{ security_group_id }}"
+        rules:
+          - proto: tcp
+            from_port: 3306
+            to_port: 3306
+            cidr_ip: "10.0.0.0/16"  # Example: Your VPC CIDR
+          - proto: tcp
+            from_port: 6379
+            to_port: 6379
+            cidr_ip: "10.0.0.0/16"
+          - proto: tcp
+            from_port: 5672
+            to_port: 5672
+            cidr_ip: "10.0.0.0/16"
+          - proto: tcp
+            from_port: 15672
+            to_port: 15672
+            cidr_ip: "{{ my_public_ip }}"  # Only your IP for the admin UI
+        rules_egress:
+          - proto: all
+            cidr_ip: 0.0.0.0/0

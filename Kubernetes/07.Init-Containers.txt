@@ -1,0 +1,75 @@
+Init Container:
+
+An Init Container in Kubernetes is a special type of container that runs and completes before the main application containers start in a Pod.
+It is used to perform initialization tasks such as setting up configuration, waiting for dependencies, or preparing the environment.
+
+🔹 Use Cases
+Waiting for a service/DB to be ready.
+Setting up configuration files.
+Running DB migrations.
+Fetching secrets/configs before app runs.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-init
+spec:
+  initContainers:
+  - name: init-wait
+    image: busybox
+    command: ['sh', '-c', 'until nslookup my-service; do sleep 2; done']
+  containers:
+  - name: app
+    image: nginx
+----------------------------------------------
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app.kubernetes.io/name: MyApp
+spec:
+  containers:
+  - name: myapp-container
+    image: busybox:1.28
+    command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+  initContainers:
+  - name: init-myservice
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"]
+  - name: init-mydb
+    image: busybox:1.28
+    command: ['sh', '-c', "until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"]
+
+-------------------------------------------------------------------
+
+
+🔹 Static Pods
+
+Pods managed directly by the kubelet, not by the API server.
+Defined in manifest files placed in a directory on the node (default: /etc/kubernetes/manifests).
+Useful for control plane components (e.g., kube-apiserver, etcd, kube-scheduler) in clusters bootstrapped with kubeadm.
+They are always bound to a specific node (not scheduled by the scheduler).
+Kubelet monitors the manifest file → if updated/deleted, pod is recreated/removed automatically.
+The API server can see these pods as “mirror pods”, but cannot manage them.
+
+🔹 Example
+
+If you place this YAML in /etc/kubernetes/manifests/nginx.yaml:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-static
+  namespace: default
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+
+
+A Job, on the other hand, is a higher-level Kubernetes resource designed to run pods to completion. Instead of running continuously, a Job ensures that one or more pods successfully terminate after completing their tasks. This is ideal for batch or one-time tasks such as database migrations or data processing. Similarly, a CronJob builds on Jobs by allowing them to run at scheduled times, similar to Linux cron. This is commonly used for repetitive tasks such as log cleanup, database backups, or periodic reporting.
+
+The key difference is that static pods are always pods managed by the kubelet and cannot directly represent Jobs or CronJobs. The kubelet does not understand Job or CronJob objects because these are managed by the Kubernetes control plane and API server. If a Job or CronJob manifest is placed in the static pod directory, the kubelet will not process it, since it only supports raw Pod manifests. Therefore, while Jobs and CronJobs are powerful tools for task automation and scheduling, they cannot be implemented as static pods.
+
+

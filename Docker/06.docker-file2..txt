@@ -1,0 +1,116 @@
+Dockerfile Hands-on to build image
+----------------------------------------------------
+
+sudo apt update
+sudo apt install docker.io
+sudo service docker start
+sudo systemctl enable docker
+sudo usermod -aG docker ubuntu
+
+Restart the session
+
+docker info	#checking docker is running or not
+
+mkdir tomcat	#Creating directory to store dockerfile
+cd tomcat
+vi Dockerfile
+
+-------------------------------------------------------
+
+FROM tomcat:latest
+LABEL maintainer="info@cloudsoftsol.com"
+
+# Copy your WAR file into the Tomcat webapps directory
+COPY jenkins.war /usr/local/tomcat/webapps/
+
+# Expose Tomcat's default HTTP port
+EXPOSE 8080
+
+# Start Tomcat
+CMD ["catalina.sh", "run"]
+
+--------------------------------------------------------
+
+#Download the Jenkins.war to current directory /tomcat/
+wget https://updates.jenkins.io/download/war/2.523/jenkins.war
+
+
+docker build -t mytomcat:1 .	#Jenkins.war is in current directory indicating the dot.
+
+#Note - It first downloads the tomcat latest image
+	On top of that it adds the layers
+
+--------------------------------------------------
+
+mytomcat:1 image is created
+
+docker images	#Check for the images
+	We have two images 1.tomcat 2.mytomcat:1
+
+docker build -t mytomcat:2
+
+docker images
+	we have three images 1.tomcat 2.mytomcat:1 3.mytomcat:2
+
+docker volume create myvol	#Creating volume
+
+docker run --name mytomcat -p 8081:8080 -v myvol:/usr/local/tomcat/webapps -d mytomcat:2	#Creating container
+
+cd /var/lib
+sudo cd /docker/volumes/myvol/_data/
+
+Now see the Jenkins.war copied in the image is also copied to local directory
+
+cd ~	#Going to the home directory
+
+git clone https://github.com/kliakos/sparkjava-war-example.git
+
+cd sparkjava-war-example/
+
+sudo apt install maven -y	#Installing maven
+
+mvn clean test package	#maven goals to build war file
+
+cd ~
+
+cd /sparkjava-war-example/target/
+
+You can see war file sparkjava-hello-world-1.0.war
+
+cp sparkjava-hello-world-1.0.war /var/lib/docker/volumes/myvol/_data/	
+
+#war file is copied to local directory which inturn copies into container
+
+You can check in container
+sudo docker exec -it mytomcat /bin/bash
+
+cd /usr/local/tomcat/weapps/
+
+You can see war file sparkjava-hello-world-1.0.war
+
+exit	#Exiting the container
+
+
+sudo docker exec -it mytomcat ls	#Directly run command from outside container
+
+sudo docker network create mynetwork	#Creating a network
+
+sudo docker network ls
+
+sudo docker network connect mynetwork mytomcat	#Attaching our container to the newly created bridge network
+
+sudo docker inspect mytomcat	#Check the attached network and other details
+
+sudo docker network disconnect mynetwork mytomcat	#Dettaching our container from user-define network and it attaches to default bridge network
+
+
+
+
+
+
+
+
+
+
+ 
+

@@ -1,0 +1,24 @@
+---
+- name: Install and Start Tomcat
+  hosts: all  
+  become: yes
+
+  tasks:
+    - name: Update apt package cache
+      ansible.builtin.apt:
+        update_cache: yes
+
+    - name: Install Tomcat
+      ansible.builtin.apt:
+        name: tomcat10
+        state: present
+
+    - name: Ensure Tomcat is started and enabled
+      ansible.builtin.service:
+        name: tomcat
+        state: started
+        enabled: yes
+
+    - name: Print a success message
+      ansible.builtin.debug:
+        msg: "Tomcat has been installed and is running."

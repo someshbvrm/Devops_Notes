@@ -1,0 +1,40 @@
+Docker Networking:
+
+Types of network drivers.
+
+	1. Bridge - container accessible to all
+	2. Host - container accessible from host only
+	3. Overlay - in swarm container accessible from one host to another host
+	4. ipvlan - ipv4 and ipv6 can be assigned to container
+	5. Macvlan - for every container macid is attached
+	6. None - container cannot be accessed.
+
+By default bridge network is created for a container.
+
+
+docker network create my-net	#Creating bridge network
+
+docker network inspect my-net	#Ispecting the network
+
+docker network ls	#Listing all networks
+
+docker network rm my-net	#Removing the network
+
+Creating container and network
+docker create --name my-nginx --network my-net --publish 8080:8080 nginx:latest
+
+Attaching network to existing container
+docker network connect my-net my-nginx	#To attach network
+
+docker network disconnect my-net my-nginx	#To detach network
+
+If we have two containers, by default they wont communicate with eachother. We need to attach them to same network to communicate.
+
+Ex: Tomcat - MySQL
+
+Old method - Attaching the containers to same network
+New method - Using overlay
+
+docker run --rm -d --network host --name my_nginx nginx		#-d means to start the container detached (in the background)
+								#rm option means to remove the container once it stops/exits
+

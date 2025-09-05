@@ -1,0 +1,25 @@
+---
+- name: Install and configure Nginx
+  hosts: webservers  # Targets a group defined in your inventory
+  become: yes        # Equivalent to using sudo
+  gather_facts: yes  # Gathers system info (recommended)
+
+  # Pre-tasks run before any roles are applied.
+  pre_tasks:
+    - name: Update the package cache (for apt-based systems)
+      apt:
+        update_cache: yes
+      when: ansible_pkg_mgr == 'apt'
+
+  # The core of the playbook: the list of roles to apply.
+  roles:
+    - role: nginx
+      # These variables here have the highest priority and override the role's defaults/vars.
+      nginx_http_port: 8080  # Override the default port just for this playbook run
+      nginx_web_root: /var/www/my_app
+
+  # Post-tasks run after all roles are applied.
+  post_tasks:
+    - name: Print a success message
+      debug:
+        msg: "Nginx has been configured. Access it on http://{{ ansible_host }}:{{ nginx_http_port }}"

@@ -1,0 +1,21 @@
+---
+- name: Launch an EC2 instance
+  hosts: localhost
+  connection: local
+  collections:
+    - amazon.aws
+
+  tasks:
+    - name: Launch EC2
+      ec2_instance:
+        name: geninstance
+        key_name: keypair_stockholms
+        instance_type: t3.micro
+        image_id: ami-0a716d3f3b16d290c  # Example AMI (update for your region)
+        region: eu-north-1
+        wait: yes
+      register: ec2_info
+
+    - name: Show instance details
+      debug:
+        var: ec2_info

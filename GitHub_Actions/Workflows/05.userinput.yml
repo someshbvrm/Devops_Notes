@@ -1,0 +1,49 @@
+# ------------------------------------------------------
+# GitHub Actions Workflow Example: User Input + Step Outputs
+# ------------------------------------------------------
+# This workflow demonstrates:
+#   1. Accepting user inputs when manually triggering the workflow
+#   2. Performing calculations inside a step
+#   3. Setting step outputs using the modern $GITHUB_OUTPUT method
+# ------------------------------------------------------
+
+name: Test User Input Workflow
+
+# ------------------------------------------------------
+# Trigger workflow manually from GitHub UI (Actions tab)
+# ------------------------------------------------------
+on:
+  workflow_dispatch:
+    inputs:
+      number1:
+        description: 'First number'
+        default: '0'
+        required: true
+      number2:
+        description: 'Second number'
+        default: '0'
+        required: true
+
+jobs:
+  add_numbers:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ------------------------------------------------
+      # Step 1: Calculate the sum of the two numbers
+      # ------------------------------------------------
+      - name: Add numbers
+        id: sum
+        run: |
+          # Calculate sum using bash arithmetic
+          SUM=$((${{ inputs.number1 }} + ${{ inputs.number2 }}))
+          
+          # Set step output using the recommended $GITHUB_OUTPUT file
+          echo "sum=$SUM" >> $GITHUB_OUTPUT
+
+      # ------------------------------------------------
+      # Step 2: Display the sum
+      # ------------------------------------------------
+      - name: Display sum
+        run: |
+          echo "The sum of ${{ inputs.number1 }} and ${{ inputs.number2 }} is ${{ steps.sum.outputs.sum }}"

@@ -1,0 +1,34 @@
+# ----------------------------------------------------
+# Example GitHub Actions Workflow: Using Variables
+# ----------------------------------------------------
+# This workflow demonstrates how to:
+#  1. Define environment variables at different levels
+#  2. Access them inside jobs and steps
+#  3. Print values using shell commands
+# ----------------------------------------------------
+
+name: Demo - Using Workflow Variables
+
+# Trigger workflow manually from GitHub UI
+on:
+  workflow_dispatch:
+
+# Global environment variables (available to all jobs)
+env:
+  GREETING: "Hello"
+
+jobs:
+  show_greeting:
+    # Each job runs on a virtual machine provided by GitHub
+    runs-on: ubuntu-latest
+
+    # Job-specific environment variables (override or add to global ones)
+    env:
+      USER_NAME: "Somesh"
+
+    steps:
+      # Each step can also have its own environment variables
+      - name: Display Welcome Message
+        run: echo "$GREETING, I am $USER_NAME, learning $TOPIC"
+        env:
+          TOPIC: "GitHub Actions Workflows"

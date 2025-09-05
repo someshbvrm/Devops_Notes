@@ -1,0 +1,59 @@
+# ------------------------------------------------------
+# GitHub Actions Workflow Example: Configuration + Variables
+# ------------------------------------------------------
+# This workflow shows:
+#   1. How to define environment variables at workflow, job, and step levels
+#   2. How to use GitHub "Configuration Variables" (from repo settings)
+#   3. How variables are combined and displayed
+# ------------------------------------------------------
+
+name: Testing Configuration Variables
+
+# ------------------------------------------------------
+# Trigger workflow manually from GitHub UI (Actions tab)
+# ------------------------------------------------------
+on:
+  workflow_dispatch:
+
+# ------------------------------------------------------
+# Workflow-level environment variable
+# Available to ALL jobs and steps in this workflow
+# ------------------------------------------------------
+env:
+  gitlab: Gitlab Actions
+
+jobs:
+  Greeting_job:
+    # --------------------------------------------------
+    # Job runs on the latest Ubuntu virtual machine
+    # --------------------------------------------------
+    runs-on: ubuntu-latest
+
+    # --------------------------------------------------
+    # Job-level environment variable
+    # Available to all steps inside this job
+    # --------------------------------------------------
+    env:
+      Greet: Hello
+
+    steps:
+      # ------------------------------------------------
+      # Step: Print a message
+      # This step also has its own environment variable.
+      # Notice how we combine workflow-level, job-level,
+      # step-level, and GitHub config vars together.
+      # ------------------------------------------------
+      - name: "Greetings"
+        run: echo "$Greet!  This is  $First_Name working on $gitlab project ${{ vars.PROJECT_ID }}!"
+        env:
+          First_Name: Somesh
+          # Step-level variable (only available in this step)
+
+# ------------------------------------------------------
+# NOTES:
+# - $Greeting → comes from job-level env
+# - $First_Name → comes from step-level env
+# - $cloud → comes from workflow-level env
+# - ${{ vars.PROJECT_ID }} → comes from GitHub "Configuration Variables"
+#   (set under: Repository → Settings → Variables → Configuration variables)
+# ------------------------------------------------------

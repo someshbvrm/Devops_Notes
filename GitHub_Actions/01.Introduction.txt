@@ -1,0 +1,53 @@
+GitHub Actions is a continuous integration and continuous delivery (CI/CD) platform built directly into GitHub. 
+It allows you to automate various tasks within your software development workflow.
+
+GitHub Actions: Components
+--------------------------
+Workflows
+
+- A workflow is a configurable automated process that will run one or more jobs.
+- Workflows are defined in the .github/workflows directory in a repository.
+- Workflows are defined by a YAML file.
+
+Jobs
+
+- A job is a set of steps in a workflow that is executed on the same runner.
+- Each step is either a shell script that will be executed, or an action that will be run.
+- Steps are executed in order and are dependent on each other.
+
+Events
+
+- An event is a specific activity in a repository that triggers a workflow run.
+- For example, activity can originate from GitHub when someone creates a pull request, opens an issue, or pushes a commit to a repository.
+
+Actions
+
+- An action is a custom application for the GitHub Actions platform that performs a complex but frequently repeated task.
+- Use an action to help reduce the amount of repetitive code that you write in your workflow files.
+
+Runners
+
+- A runner is a server that runs your workflows when they’re triggered. Each runner can run a single job at a time.
+- GitHub provides GitHub runners, and we can also create self-hosted runners to run our workflows.
+
+-----------------------------------------------------------------
+
+Workflow structure
+
+
+name: My Awesome Workflow  # The name of your workflow
+
+on:
+  push:  # This workflow will trigger on a push event
+
+jobs:
+  build:  # The name of your job within the workflow
+    runs-on: ubuntu-latest  # This job will run on an Ubuntu runner
+    
+    steps:
+      - uses: actions/checkout@v3  # Checkout the code from the repository
+      
+      # Add additional steps here to perform actions within your workflow
+      - run: echo "Hello, world! This is a simple GitHub Actions workflow."  # Example step to print a message
+
+--------------------------------------------------------------

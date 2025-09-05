@@ -1,0 +1,49 @@
+# ------------------------------------------------------
+# GitHub Actions Workflow Example: Context Variables
+# ------------------------------------------------------
+# This workflow demonstrates:
+#   1. How to use built-in GitHub "context variables"
+#   2. How to display information about the repository,
+#      workflow, and the user who triggered it
+#   3. Difference between environment variables (env) and contexts
+# ------------------------------------------------------
+
+name: Testing Context Variables
+
+# ------------------------------------------------------
+# Trigger workflow manually from GitHub UI (Actions tab)
+# ------------------------------------------------------
+on:
+  workflow_dispatch:
+
+# ------------------------------------------------------
+# Workflow-level environment variable (example)
+# This will be available in all jobs & steps as $name
+# ------------------------------------------------------
+env:
+  name: Somesh
+
+jobs:
+  test_context_variables:
+    runs-on: ubuntu-latest   # Runs on Ubuntu virtual machine
+
+    steps:
+      # ------------------------------------------------
+      # Step: Print out context variables
+      # Context variables use the ${{ ... }} syntax
+      # They give information about the workflow run itself
+      # ------------------------------------------------
+      - name: "Checking Context Variable"
+        run: |
+          echo "Hello $name 👋"   # Access workflow-level environment variable
+          echo "Repository Name : ${{ github.repository }}"       # Owner/Repo
+          echo "Workflow Name   : ${{ github.workflow }}"         # Workflow file name
+          echo "Triggered by    : ${{ github.triggering_actor }}" # Who ran it
+
+# ------------------------------------------------------
+# NOTES:
+# - $name → comes from workflow-level environment variable
+# - ${{ github.repository }} → e.g., user/repo-name
+# - ${{ github.workflow }} → name of this workflow (from 'name:' at top)
+# - ${{ github.triggering_actor }} → GitHub username that started workflow
+# ------------------------------------------------------

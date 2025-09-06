@@ -13,8 +13,8 @@
         instance_type: t3.micro
         image_id: ami-0a716d3f3b16d290c  # Example AMI (update for your region)
         region: eu-north-1
-        aws_access_key: AKIAQCJW5Q37GB6MALVW
-        aws_secret_key: ONsM3XhgNAcAUR3QxyyxZQ0+a0Q/88FBUkTHAAaS
+      #  aws_access_key:
+       # aws_secret_key:
         wait: yes
       register: ec2_info
 

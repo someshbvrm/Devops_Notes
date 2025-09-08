@@ -1,5 +1,3 @@
-https://us06web.zoom.us/j/83912928988?pwd=mbcCnaTaCRz7Smchoj3lQ7qEnk60Dt.1
-
 
 1. AWS Educate: https://www.awseducate.com/
 2. https://awseducate.instructure.com/
@@ -8,13 +6,6 @@ https://us06web.zoom.us/j/83912928988?pwd=mbcCnaTaCRz7Smchoj3lQ7qEnk60Dt.1
 5. Reddit Post:   / earning_50_off_voucher_with_etc_detailed_post  
 6. https://summits-india.virtual.awsevents.com
 
-
-www.console.aws.amazon.com
-
-User name	Password	Console sign-in URL
-Administrator	shaloM@316	https://004947019518.signin.aws.amazon.com/console
-S3Full		shaloM@316	https://004947019518.signin.aws.amazon.com/console
-ReadOnly	shaloM@316	https://004947019518.signin.aws.amazon.com/console
 
 https://siddharthqs.com/my-aws-notes
 

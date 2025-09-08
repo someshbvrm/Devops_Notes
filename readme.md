@@ -16,7 +16,6 @@ This repository is aimed at both **beginners and experienced DevOps engineers**.
 - **Containerization & Orchestration** using Docker, Kubernetes, and Docker Swarm  
 - **CI/CD Pipelines** with GitHub Actions & Jenkins  
 - **Version Control** using Git  
-- **Interview preparation** for DevOps roles  
 
 Each section contains **step-by-step instructions, examples, command references, and best practices** to provide a practical DevOps learning experience.
 
@@ -33,7 +32,6 @@ Each section contains **step-by-step instructions, examples, command references,
 ├───Git                     # Git commands, branching, merging, workflow examples
 ├───GitHub\_Actions
 │   └───Workflows           # Reusable workflows, CI/CD examples for Terraform/Docker
-├───Interview               # Common DevOps interview questions & answers
 ├───Jenkins                 # Jenkins pipeline examples, setup, and best practices
 ├───Kubernetes              # Kubernetes concepts, manifests, pods, deployments, services
 └───Terraform               # Terraform modules, examples, state management, best practices
@@ -79,10 +77,6 @@ Each section contains **step-by-step instructions, examples, command references,
 - AWS provisioning  
 - Best practices, workspaces, and locking  
 
-### 8. **Interview**
-- Frequently asked DevOps questions  
-- Hands-on exercises and scenario-based questions  
-
 ---
 
 ## ⚡ Key Features
@@ -113,6 +107,29 @@ Each section contains **step-by-step instructions, examples, command references,
 - [GitHub Actions](https://docs.github.com/en/actions)  
 - [Jenkins](https://www.jenkins.io/doc/)  
 
+01. AWS Educate: https://www.awseducate.com/
+02. https://awseducate.instructure.com/
+03. AWS Skill Builder: https://skillbuilder.aws
+04. Reward Points to Get 100%. FREE Voucher: https://www.awseducate.com/student/s/etc-rewards
+05. Reddit Post:   / earning_50_off_voucher_with_etc_detailed_post  
+06. https://summits-india.virtual.awsevents.com
+07. https://siddharthqs.com/my-aws-notes
+08. https://github.com/asifvora/aws-solutions-architect-associate-notes   
+    or   
+    https://aws-solutions-architect-associate-notes.vercel.app/   
+09. https://github.com/thyagomota/aws-labs  ##Outdated labs   
+10. https://www.wellarchitectedlabs.com/   
+11. https://catalog.workshops.aws/general-immersionday/en-US   
+12. https://catalog.workshops.aws/networking/en-US  
+13. https://workshops.aws/categories/Compute
+14. Static website samples - https://teleporthq.io/static-website-templates
+15. Complete Linux Course with Networking and Shell Scripting | Notes Provided
+    https://www.youtube.com/watch?v=29eDuMjsEF8&t=3916s
+16. Learn Git – Full Course for Beginners (freecodecamp)
+    https://www.youtube.com/watch?v=zTjRZNkhiEU&t=2772s
+17. Kubernetes Beginner To Expert Level In One Video | Ultimate Kubernetes Guide
+    https://www.youtube.com/watch?v=JoHUi9KvnOA
+
 ---
 
 ## 🤝 Contributing
@@ -141,10 +158,3 @@ This repository is a **comprehensive reference for DevOps enthusiasts**, bridgin
 Whether preparing for **certifications**, **interviews**, or **real-world DevOps projects**, this repo provides structured, practical guidance.
 
 > ⚡ Happy Learning and Automating! 🐳
-```
-
----
-
-If you want, I can also **add a colorful badge section at the top** for GitHub, Docker, Terraform, Ansible, and Kubernetes so the README looks even more professional and visually appealing.
-
-Do you want me to add that?

@@ -1,0 +1,9 @@
+# Starter Workflow
+
+- **Starter workflows** are templates that help you to create your own GitHub Actions workflows for a repository.
+- They offer an alternative to starting from a blank workflow file and are useful because some of the work will already have been done for you.
+- GitHub offers starter workflows for a variety of languages and tooling. When you set up workflows in your repository, GitHub analyzes the code in your repository and recommends workflows based on the language and framework in your repository.
+- For example, if you use Node.js, GitHub will suggest a starter workflow file that installs your Node.js packages and runs your tests. You can search and filter to find relevant starter workflows.
+
+Reference: https://docs.github.com/en/actions/how-tos/reuse-automations/create-workflow-templates
+

@@ -1,6 +1,6 @@
 ---
 - name: Install and Start Nginx
-  hosts: ubuntu_servers
+  hosts: webservers
   become: yes
 
   tasks:

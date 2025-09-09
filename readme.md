@@ -1,7 +1,7 @@
 
 ---
 
-# 📚 DevOps Tools Notes Repository
+# 📚 DevOps Notes Repository
 
 Welcome to the **DevOps Tools Notes** repository! This repository contains detailed notes, tutorials, and hands-on examples for a wide range of **DevOps tools and practices**, organized for easy reference and practical learning.
 

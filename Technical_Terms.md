@@ -135,3 +135,61 @@ These are **simple, professional DevOps sentences** you can practice daily.
 30. The migration was smooth, and business continuity was maintained.
 
 ---
+Got it 👍 — you’re looking for **professional, domain-specific vocabulary** to use in DevOps, so your English sounds more natural and advanced in technical discussions. I’ll give you a list of terms/phrases like *gracefully* and *housed*, along with when to use them:
+
+---
+
+## 🔑 Useful Professional Terms in DevOps Context
+
+### System & Application Behavior
+
+* **Gracefully stopped / terminated** → shutdown without errors or data loss.
+* **Abruptly killed** → forcefully stopped without cleanup.
+* **Resides on** → the service *resides on* a particular server.
+* **Hosted on** → application *hosted on* an EC2 instance.
+* **Deployed to** → software is *deployed to* production.
+* **Provisioned** → resources (VMs, networks) *provisioned* by Terraform.
+* **Orchestrated** → workloads *orchestrated* by Kubernetes.
+* **Scaled up/down** → increasing or decreasing resources.
+* **Rolled back** → reverting to a previous stable state.
+* **Instrumented** → code or systems *instrumented* for monitoring.
+
+---
+
+### Infrastructure & Networking
+
+* **Housed in** → data/application *housed in* a datacenter.
+* **Residing within** → subnet *residing within* a VPC.
+* **Attached to** → security group *attached to* an instance.
+* **Bound to** → container *bound to* port 8080.
+* **Isolated in** → workload *isolated in* its own namespace.
+* **Exposed via** → API *exposed via* a load balancer.
+* **Backed by** → service *backed by* a database.
+* **Served from** → static files *served from* S3.
+
+---
+
+### Reliability & Deployment
+
+* **Immutable** → instance or image that cannot be changed after creation.
+* **Ephemeral** → short-lived (like containers or spot instances).
+* **Persistent** → storage or volume that remains after restart.
+* **Fault-tolerant** → system designed to withstand failures.
+* **Highly available** → application remains accessible despite issues.
+* **Blue-green deployment** → two environments for smooth release.
+* **Canary release** → gradual rollout to a subset of users.
+* **Drained** → connections *drained* before shutting down a node.
+
+---
+
+### Processes & Workflows
+
+* **Automated through** → CI/CD *automated through* pipelines.
+* **Triggered by** → build *triggered by* a commit.
+* **Executed against** → tests *executed against* staging.
+* **Parameterized** → script *parameterized* for flexibility.
+* **Idempotent** → running same script multiple times yields same result.
+* **Reconciled** → Kubernetes continuously *reconciles* desired vs actual state.
+* **Enforced via** → policies *enforced via* IaC or governance.
+
+---

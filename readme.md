@@ -1,7 +1,7 @@
 
 ---
 
-# 📚 DevOps Tools Notes Repository
+# 📚 DevOps Notes Repository
 
 Welcome to the **DevOps Tools Notes** repository! This repository contains detailed notes, tutorials, and hands-on examples for a wide range of **DevOps tools and practices**, organized for easy reference and practical learning.
 
@@ -34,6 +34,7 @@ Each section contains **step-by-step instructions, examples, command references,
 │   └───Workflows           # Reusable workflows, CI/CD examples for Terraform/Docker
 ├───Jenkins                 # Jenkins pipeline examples, setup, and best practices
 ├───Kubernetes              # Kubernetes concepts, manifests, pods, deployments, services
+├───Linux                   # Linux commands and shell scripting notes
 └───Terraform               # Terraform modules, examples, state management, best practices
 
 ```
@@ -72,7 +73,11 @@ Each section contains **step-by-step instructions, examples, command references,
 - Node affinity, taints, tolerations  
 - Helm charts and multi-container orchestration  
 
-### 7. **Terraform**
+### 7. **Linux**
+- Commands  
+- Shell Scripting
+
+### 8. **Terraform**
 - Modules, remote state management  
 - AWS provisioning  
 - Best practices, workspaces, and locking  

@@ -40,6 +40,7 @@
 
 * **Node Affinity** – Schedules pods onto specific nodes based on labels.
 * **Pod Affinity** – Co-locates pods on the same node for better performance.
+* **Node Anti-Affinity** - 
 * **Pod Anti-Affinity** – Spreads pods across nodes for high availability.
 * **Taints and Tolerations** – Prevent or allow pods to be scheduled on certain nodes.
 
